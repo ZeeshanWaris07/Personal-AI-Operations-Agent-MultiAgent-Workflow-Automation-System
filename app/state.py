@@ -12,3 +12,5 @@ class AgentState(TypedDict):
     ]
 
     final_respponse : str
+
+    allowed_tool_calls : list[dict]

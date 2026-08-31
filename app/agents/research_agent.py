@@ -1,6 +1,6 @@
 from langchain_core.messages import SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
-
+from langgraph.runtime import Runtime
 from app.state import AgentState
 from app.tools import TOOLS
 
@@ -29,7 +29,13 @@ When you have enough information, provide a useful answer.
 """
 
 
-def research_agent(state: AgentState):
+def research_agent(state: AgentState,runtime:Runtime):
+
+    print(
+        f"Iteration: {runtime.context.num_iterations}"
+    )
+    
+    runtime.context.num_iterations += 1
 
     messages = [
         SystemMessage(content=RESEARCH_PROMPT),
