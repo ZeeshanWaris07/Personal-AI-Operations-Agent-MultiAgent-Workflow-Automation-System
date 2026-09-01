@@ -41,3 +41,21 @@ def record_tool_call(
             **extra,
         }
     )
+
+def update_tool_call(
+    history: list[dict],
+    signature: str,
+    *,
+    status: str,
+    **updates,
+):
+
+    for entry in reversed(history):
+
+        if entry["signature"] == signature:
+
+            entry["status"] = status
+
+            entry.update(updates)
+
+            return

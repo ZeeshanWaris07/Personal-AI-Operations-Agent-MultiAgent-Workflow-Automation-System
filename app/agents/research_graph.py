@@ -5,7 +5,7 @@ from app.state import AgentState
 from app.nodes.tool_executor import tool_node
 from app.agents.research_agent import research_agent
 from app.nodes.tool_controller import tool_controller
-
+from app.nodes.filter_tool_calls import create_filter_ai_message
 def route_research(state: AgentState):
 
     last_message = state["messages"][-1]
@@ -27,6 +27,7 @@ def build_research_graph():
     builder.add_node('research',research_agent)
     builder.add_node('tools',tool_node)
     builder.add_node('tool_controller',tool_controller)
+    builder.add_node('filter',create_filter_ai_message)
 
     builder.add_edge(START,'research')
     builder.add_conditional_edges(
@@ -37,7 +38,8 @@ def build_research_graph():
             'end' : END
         }
     )
-    builder.add_edge('tool_controller','tools')
+    builder.add_edge('tool_controller','filter')
+    builder.add_edge('filter','tools')
     builder.add_edge(
         'tools',
         'research'
