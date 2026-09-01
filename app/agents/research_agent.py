@@ -3,12 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.runtime import Runtime
 from app.state import AgentState
 from app.tools import TOOLS
-
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0,
-)
+from app.llm import llm
 
 
 research_llm = llm.bind_tools(TOOLS)
