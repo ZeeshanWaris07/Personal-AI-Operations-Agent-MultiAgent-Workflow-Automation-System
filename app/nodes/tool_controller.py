@@ -14,7 +14,7 @@ def tool_controller(
     state: AgentState,
     runtime: Runtime[AgentContext],
 ):
-
+    
     last_message = state["messages"][-1]
 
     tool_calls = getattr(

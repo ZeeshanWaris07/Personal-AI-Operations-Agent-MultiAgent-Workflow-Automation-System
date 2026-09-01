@@ -30,12 +30,12 @@ When you have enough information, provide a useful answer.
 
 
 def research_agent(state: AgentState,runtime:Runtime):
+    
+    runtime.context.num_iterations += 1
 
     print(
         f"Iteration: {runtime.context.num_iterations}"
     )
-    
-    runtime.context.num_iterations += 1
 
     messages = [
         SystemMessage(content=RESEARCH_PROMPT),
