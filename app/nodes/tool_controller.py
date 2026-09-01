@@ -61,9 +61,12 @@ def tool_controller(
 
                 continue
 
+        tool_call_id = tool_call.get("id") or f"{tool_name}:{signature}:{len(runtime.context.tool_call_history)}"
+
         record_tool_call(
             runtime.context.tool_call_history,
             tool_name=tool_name,
+            tool_call_id=tool_call_id,
             signature=signature,
             status="pending",
         )

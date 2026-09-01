@@ -28,6 +28,7 @@ def record_tool_call(
     history: list[dict],
     *,
     tool_name: str,
+    tool_call_id: str,
     signature: str,
     status: str,
     **extra,
@@ -36,6 +37,7 @@ def record_tool_call(
     history.append(
         {
             "tool": tool_name,
+            "tool_call_id": tool_call_id,
             "signature": signature,
             "status": status,
             **extra,
@@ -44,7 +46,7 @@ def record_tool_call(
 
 def update_tool_call(
     history: list[dict],
-    signature: str,
+    tool_call_id: str,
     *,
     status: str,
     **updates,
@@ -52,10 +54,9 @@ def update_tool_call(
 
     for entry in reversed(history):
 
-        if entry["signature"] == signature:
+        if entry["tool_call_id"] == tool_call_id:
 
             entry["status"] = status
-
             entry.update(updates)
 
             return

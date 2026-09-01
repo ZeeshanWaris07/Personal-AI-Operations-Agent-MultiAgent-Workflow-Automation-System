@@ -9,46 +9,35 @@ from app.utils.tool_errors import (
 
 def classify_error(error: Exception):
 
-    error_name = type(error).__name__
-
-    if "Timeout" in error_name:
+    if isinstance(error, ToolTimeoutError):
 
         return {
             "error_type": "timeout",
             "retryable": True,
         }
 
-    if "RateLimit" in error_name:
+    if isinstance(error, ToolRateLimitError):
 
         return {
             "error_type": "rate_limit",
             "retryable": True,
         }
 
-    if isinstance(
-        error,
-        ToolAuthenticationError,
-    ):
+    if isinstance(error, ToolAuthenticationError):
 
         return {
             "error_type": "authentication",
             "retryable": False,
         }
 
-    if isinstance(
-        error,
-        ToolPermissionError,
-    ):
+    if isinstance(error, ToolPermissionError):
 
         return {
             "error_type": "permission_denied",
             "retryable": False,
         }
 
-    if isinstance(
-        error,
-        ToolInvalidArgumentError,
-    ):
+    if isinstance(error, ToolInvalidArgumentError):
 
         return {
             "error_type": "invalid_argument",

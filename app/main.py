@@ -1,7 +1,10 @@
 from langchain_core.messages import HumanMessage
-
+from app.context import AgentContext
 from app.graph import build_graph
 
+context = AgentContext(
+    user_id='zeeshan'
+)
 
 graph = build_graph()
 
@@ -21,7 +24,8 @@ def main():
                     HumanMessage(content=user_input)
                 ],
                 "final_response": None,
-            }
+            },
+            context=context
         )
 
         print("\nAI:", result["messages"][-1].content)
