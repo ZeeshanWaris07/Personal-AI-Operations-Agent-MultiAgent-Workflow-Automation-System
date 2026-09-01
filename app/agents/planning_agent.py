@@ -21,12 +21,14 @@ def Planner(state:PlanningState):
 
     objective = state.get('objective')
     research_results = state.get('research_results')
+    review = state.get('review',None)
 
-    prompt = f"""
+    if review is None:
+
+        prompt = f"""
 You are a planning agent.
 
-Your job is to create a clear, actionable plan
-for the user's objective.
+Create a clear and actionable plan for the user's objective.
 
 USER OBJECTIVE:
 {objective}
@@ -34,21 +36,54 @@ USER OBJECTIVE:
 RESEARCH RESULTS:
 {research_results}
 
-Create a plan that:
-- directly addresses the objective
-- uses the available research
-- contains logical steps
-- identifies priorities
-- identifies potential risks
+The plan should:
+- directly address the objective
+- use the available research
+- contain logical actionable steps
+- identify priorities
+- identify potential risks
 """
 
-    structured_llm = llm.with_structured_output(Plan)
+    else:
 
-    response = structured_llm.invoke(prompt)
+         current_plan = state.get('plan')
+         prompt = f"""
+You are a planning agent revising an existing plan.
+
+USER OBJECTIVE:
+{objective}
+
+RESEARCH RESULTS:
+{research_results}
+
+CURRENT PLAN:
+{current_plan}
+
+REVIEWER FEEDBACK:
+{review.feedback}
+
+MISSING ITEMS:
+{review.missing_items}
+
+Create an improved version of the plan.
+
+You must address the reviewer's feedback and
+include the missing items where appropriate.
+
+Do not blindly change the plan.
+Keep good parts of the existing plan while
+fixing the identified problems.
+"""
+
+    planner_llm = llm.with_structured_output(Plan)
+
+    plan = planner_llm.invoke(prompt)
 
     return {
-        'plan' : response
+        'plan' : plan,
+        'review' : None
     }
+
 
 
 def reviewer(state:PlanningState):
