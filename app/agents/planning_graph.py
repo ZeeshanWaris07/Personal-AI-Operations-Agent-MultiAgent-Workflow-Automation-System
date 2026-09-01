@@ -2,8 +2,15 @@ from app.agents.planning_agent import Planner , reviewer
 from langgraph.graph import StateGraph,START,END
 from app.state import PlanningState
 from app.agents.planning_agent import PlanReview
+from app.context import PlannerContext
+from langgraph.runtime import Runtime
 
-def route_reviewer(state:PlanningState):
+def route_reviewer(state:PlanningState,runtime):
+
+    iterations = state.get('num_iterations',0)
+
+    if iterations >= runtime.context.max_iterations:
+        return 'final'
 
     review = state.get('review',None)
 

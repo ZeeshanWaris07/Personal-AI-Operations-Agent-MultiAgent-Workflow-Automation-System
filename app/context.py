@@ -17,3 +17,7 @@ class AgentContext:
     tool_call_history: list[dict] = field(
         default_factory=list
     )
+@dataclass
+class PlannerContext:
+
+    max_iterations : int = 0

@@ -19,6 +19,7 @@ class PlanReview(BaseModel):
 
 def Planner(state:PlanningState):
 
+    iterations = state.get('num_iterations',0)
     objective = state.get('objective')
     research_results = state.get('research_results')
     review = state.get('review',None)
@@ -81,7 +82,8 @@ fixing the identified problems.
 
     return {
         'plan' : plan,
-        'review' : None
+        'review' : None,
+        'num_iterations' : iterations + 1
     }
 
 

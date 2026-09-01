@@ -29,3 +29,5 @@ class PlanningState(TypedDict):
     plan: Plan | None
 
     review: PlanReview | None
+
+    num_iterations : int = 0
