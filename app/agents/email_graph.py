@@ -28,7 +28,7 @@ def build_email_graph():
         'approval',
         make_email_decision,
         {
-            'send' : 'final',
+            'send' : 'send_mail',
             'reject' : END
         }
     )
