@@ -1,7 +1,7 @@
 from langgraph.graph.message import add_messages
 from typing import Annotated,TypedDict,Literal
 from app.utils.tool_result import ToolExecutionResult
-from app.models.models import Plan,PlanReview
+from app.models.models import Plan,PlanReview,EmailDraft
 
 class AgentState(TypedDict):
     messages : Annotated[list,add_messages]
@@ -31,3 +31,15 @@ class PlanningState(TypedDict):
     review: PlanReview | None
 
     num_iterations : int = 0
+
+
+class EmailState(TypedDict):
+    recipient: str
+    subject: str
+    purpose: str
+
+    draft: EmailDraft | None
+
+    approved: bool | None
+
+    send_result: str | None

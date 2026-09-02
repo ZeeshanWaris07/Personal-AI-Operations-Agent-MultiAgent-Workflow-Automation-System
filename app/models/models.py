@@ -14,3 +14,11 @@ class PlanReview(BaseModel):
     approved: bool
     feedback: str
     missing_items: list[str]
+
+    from pydantic import BaseModel
+
+
+class EmailDraft(BaseModel):
+    recipient: str
+    subject: str
+    body: str
