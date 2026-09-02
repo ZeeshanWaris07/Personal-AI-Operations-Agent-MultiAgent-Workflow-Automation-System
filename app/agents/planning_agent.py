@@ -1,21 +1,7 @@
 from pydantic import BaseModel
 from app.state import PlanningState
 from app.llm import llm
-
-class Plan(BaseModel):
-
-    objective: str
-
-    steps: list[str]
-
-    priorities: list[str]
-
-    risks: list[str]
-
-class PlanReview(BaseModel):
-    approved: bool
-    feedback: str
-    missing_items: list[str]
+from app.models.models import Plan, PlanReview
 
 def Planner(state:PlanningState):
 

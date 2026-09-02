@@ -19,5 +19,5 @@ class AgentContext:
     )
 @dataclass
 class PlannerContext:
-
-    max_iterations : int = 0
+    user_id : str
+    max_iterations : int = 3
