@@ -43,3 +43,18 @@ class EmailState(TypedDict):
     approved: bool | None
 
     send_result: str | None
+
+class MainState(TypedDict):
+    objective: str
+
+    next_agent: str | None
+
+    research_results: str | None
+
+    plan: Plan | None
+
+    email_draft: EmailDraft | None
+    email_approved: bool | None
+    email_send_result: str | None
+
+    final_response: str | None
