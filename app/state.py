@@ -45,9 +45,15 @@ class EmailState(TypedDict):
     send_result: str | None
 
 class MainState(TypedDict):
+
     objective: str
 
     next_agent: str | None
+
+    email_required: bool
+    multiple_emails: bool
+
+    recipients: list[str]
 
     research_results: str | None
 

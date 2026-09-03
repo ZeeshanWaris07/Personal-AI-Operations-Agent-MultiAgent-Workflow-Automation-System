@@ -49,21 +49,40 @@ def run_planning(state:MainState,runtime):
         'plan' : result['plan']
     }
 
-def run_email(state:MainState,runtime):
+def run_email(state: MainState, runtime):
 
+    recipient = state["recipients"][0]
 
+    email_input = {
+        "recipient": recipient,
+        "subject": state.get("email_subject", ""),
+        "purpose": state["objective"],
+        "draft": None,
+        "approved": None,
+        "send_result": None,
+    }
 
+    result = email_graph.invoke(
+        email_input,
+        context=runtime.context
+    )
 
-def route_supervisor(state:AgentState):
-    return state.next_agent
+    return {
+        "email_draft": result.get("draft"),
+        "email_approved": result.get("approved"),
+        "email_send_result": result.get("send_result"),
+    }
+
+def route_supervisor(state: MainState):
+    return state['next_agent']
 
 def build_graph():
     builder = StateGraph(MainState)
 
     builder.add_node('supervisor',supervisor)
-    builder.add_node('research',research_graph)
-    builder.add_node('planning',planning_graph)
-    builder.add_node('email',email_graph)
+    builder.add_node('research',run_research)
+    builder.add_node('planning',run_planning)
+    builder.add_node('email',run_email)
 
 
     builder.add_edge(START,'supervisor')
@@ -78,7 +97,8 @@ def build_graph():
             'final' : END
         }
     )
-    builder.add_edge('planning',END)
-    builder.add_edge('email',END)
+    builder.add_edge('research','supervisor')
+    builder.add_edge('planning','supervisor')
+    builder.add_edge('email','supervisor')
 
     return builder.compile()
