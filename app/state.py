@@ -2,16 +2,10 @@ from langgraph.graph.message import add_messages
 from typing import Annotated,TypedDict,Literal
 from app.utils.tool_result import ToolExecutionResult
 from app.models.models import Plan,PlanReview,EmailDraft
+from app.models.models import FinalResponse
 
 class AgentState(TypedDict):
     messages : Annotated[list,add_messages]
-
-    next_agent : Literal[
-        "research",
-        "planning",
-        "email",
-        "final"
-    ]
 
     final_response : str
 
@@ -50,7 +44,12 @@ class MainState(TypedDict):
 
     objective: str
 
-    next_agent: str | None
+    next_agent : Literal[
+            "research",
+            "planning",
+            "email",
+            "final"
+        ]
 
     email_required: bool
     multiple_emails: bool
@@ -66,4 +65,4 @@ class MainState(TypedDict):
     email_approved: bool | None
     email_send_result: str | None
 
-    final_response: str | None
+    final_response: dict

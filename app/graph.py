@@ -8,14 +8,15 @@ from app.agents.research_graph import build_research_graph
 from app.agents.email_graph import build_email_graph
 from app.agents.planning_graph import build_planner_graph
 from langgraph.checkpoint.sqlite import SqliteSaver
+from app.nodes.final_response import final_response
 
 research_graph = build_research_graph()
 planning_graph = build_planner_graph()
 email_graph = build_email_graph()
 
-def run_research(state: MainState, runtime):
+async def run_research(state: MainState, runtime):
 
-    result = research_graph.invoke(
+    result = await research_graph.ainvoke(
         {
             "messages": [
                 {
@@ -34,26 +35,27 @@ def run_research(state: MainState, runtime):
     }
 
 
-def run_planning(state:MainState,runtime):
+async def run_planning(state: MainState, runtime):
 
     planning_input = {
-        'objective' : state['objective'],
-        'research_results' : state['research_results'],
-        'plan' : None,
-        'review' : None,
-        'num_iterations' : 0
+        "objective": state["objective"],
+        "research_results": state["research_results"],
+        "plan": None,
+        "review": None,
+        "num_iterations": 0
     }
 
-    result = planning_graph.invoke(
+    result = await planning_graph.ainvoke(
         planning_input,
         context=runtime.context
     )
 
     return {
-        'plan' : result['plan']
+        "plan": result["plan"]
     }
 
-def run_email(state: MainState, runtime):
+
+async def run_email(state: MainState, runtime):
 
     recipient = state["recipients"][0]
 
@@ -66,7 +68,7 @@ def run_email(state: MainState, runtime):
         "send_result": None,
     }
 
-    result = email_graph.invoke(
+    result = await email_graph.ainvoke(
         email_input,
         context=runtime.context
     )
@@ -87,7 +89,7 @@ def build_graph():
     builder.add_node('research',run_research)
     builder.add_node('planning',run_planning)
     builder.add_node('email',run_email)
-
+    builder.add_node('final',final_response)
 
     builder.add_edge(START,'supervisor')
 
@@ -98,12 +100,12 @@ def build_graph():
             'research' : 'research',
             'planning' : 'planning',
             'email' : 'email',
-            'final' : END
+            'final' : 'final'
         }
     )
     builder.add_edge('research','supervisor')
     builder.add_edge('planning','supervisor')
     builder.add_edge('email','supervisor')
-
+    builder.add_edge('final',END)
 
     return builder

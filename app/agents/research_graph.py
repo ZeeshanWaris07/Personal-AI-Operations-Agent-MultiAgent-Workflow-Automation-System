@@ -8,14 +8,18 @@ from app.agents.research_agent import research_agent
 from app.nodes.tool_controller import tool_controller
 from app.nodes.filter_tool_calls import create_filter_ai_message
 from app.nodes.tool_result_processor import handle_tool_result
+
 def route_research(state: AgentState,runtime:AgentContext):
 
     if runtime.context.num_iterations >= runtime.context.max_iterations:
+
         print(
             f"[Research Graph] "
             f"Max iterations reached: {runtime.context.num_iterations}"
         )
         return "end"
+
+    print("Valid")
     
     last_message = state["messages"][-1]
 
@@ -28,6 +32,7 @@ def route_research(state: AgentState,runtime:AgentContext):
 
 
     if tool_calls:
+        print("There are tool calls")
         return "tool_controller"
 
     return "end"

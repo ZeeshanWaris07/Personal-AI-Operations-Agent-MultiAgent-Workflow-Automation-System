@@ -21,3 +21,12 @@ class EmailDraft(BaseModel):
     recipient: str
     subject: str
     body: str
+
+
+
+class FinalResponse(BaseModel):
+    summary: str
+    research_summary: str | None
+    plan_summary: str | None
+    email_status: str | None
+    message: str

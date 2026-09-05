@@ -4,7 +4,6 @@ from langchain_ollama import ChatOllama
 
 load_dotenv()
 
-llm = ChatOllama(
-    model="qwen2.5-coder:3b",
-    temperature=0,
+llm = ChatGoogleGenerativeAI(
+    model="gemini-3.6-flash",
 )
