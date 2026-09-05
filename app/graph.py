@@ -13,23 +13,25 @@ research_graph = build_research_graph()
 planning_graph = build_planner_graph()
 email_graph = build_email_graph()
 
-def run_research(state:MainState,runtime):
+def run_research(state: MainState, runtime):
 
     result = research_graph.invoke(
         {
-            'messages' : [{
-                'role' : 'user',
-                'content' : state['objective']
-            }]
+            "messages": [
+                {
+                    "role": "user",
+                    "content": state["objective"]
+                }
+            ]
         },
         context=runtime.context
     )
 
-    return {
-        "messages": result["messages"],
-        "research_results": result["research_results"],
-    }
+    research_results = result["messages"][-1].content
 
+    return {
+        "research_results": research_results
+    }
 
 
 def run_planning(state:MainState,runtime):

@@ -1,7 +1,9 @@
+import asyncio
+import uuid
+
 from langchain_core.messages import HumanMessage
 from langgraph.types import Command
-from langgraph.checkpoint.sqlite import SqliteSaver
-import uuid
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 
 from app.context import AgentContext
 from app.graph import build_graph
@@ -12,7 +14,7 @@ context = AgentContext(
 )
 
 
-def main():
+async def main():
 
     thread_id = str(uuid.uuid4())
 
@@ -24,7 +26,7 @@ def main():
 
     builder = build_graph()
 
-    with SqliteSaver.from_conn_string("checkpoints.db") as checkpointer:
+    async with AsyncSqliteSaver.from_conn_string("checkpoints.db") as checkpointer:
 
         graph = builder.compile(
             checkpointer=checkpointer
@@ -32,7 +34,7 @@ def main():
 
         while True:
 
-            snapshot = graph.get_state(config)
+            snapshot = await graph.aget_state(config)
 
             if snapshot.interrupts:
 
@@ -58,7 +60,7 @@ def main():
 
                 if answer.lower() in {"yes", "y"}:
 
-                    graph.invoke(
+                    await graph.ainvoke(
                         Command(resume=True),
                         config=config,
                         context=context
@@ -68,7 +70,7 @@ def main():
 
                 else:
 
-                    graph.invoke(
+                    await graph.ainvoke(
                         Command(resume=False),
                         config=config,
                         context=context
@@ -83,17 +85,18 @@ def main():
             if user_input.lower() in {"exit", "quit"}:
                 break
 
-            result = graph.invoke(
+            result = await graph.ainvoke(
                 {
                     "messages": [
                         HumanMessage(content=user_input)
-                    ]
+                    ],
+                    'objective' : user_input
                 },
                 config=config,
                 context=context
             )
 
-            snapshot = graph.get_state(config)
+            snapshot = await graph.aget_state(config)
 
             if snapshot.interrupts:
                 continue
@@ -105,4 +108,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

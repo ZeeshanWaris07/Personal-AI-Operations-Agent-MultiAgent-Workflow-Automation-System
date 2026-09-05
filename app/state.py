@@ -61,6 +61,7 @@ class MainState(TypedDict):
 
     plan: Plan | None
 
+
     email_draft: EmailDraft | None
     email_approved: bool | None
     email_send_result: str | None

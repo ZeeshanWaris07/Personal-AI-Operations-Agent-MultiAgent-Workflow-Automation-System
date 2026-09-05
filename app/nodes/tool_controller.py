@@ -25,9 +25,12 @@ def tool_controller(
 
     if not tool_calls:
 
+        print("No tool calls")
         return {
             "allowed_tool_calls": []
         }
+
+    print("Tool Calls")
 
     allowed_calls = []
 

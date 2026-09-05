@@ -163,7 +163,6 @@ PREVIOUS EMAIL RECIPIENTS:
     return {
         "next_agent": decision.next_agent,
         "email_required": decision.email_required,
-        "email_action": decision.email_action,
         "multiple_emails": decision.multiple_emails,
         "recipients": decision.recipients,
     }
