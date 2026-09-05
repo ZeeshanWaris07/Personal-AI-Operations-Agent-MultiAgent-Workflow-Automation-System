@@ -7,6 +7,7 @@ from langgraph.prebuilt import ToolNode
 from app.agents.research_graph import build_research_graph
 from app.agents.email_graph import build_email_graph
 from app.agents.planning_graph import build_planner_graph
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 research_graph = build_research_graph()
 planning_graph = build_planner_graph()
@@ -25,7 +26,8 @@ def run_research(state:MainState,runtime):
     )
 
     return {
-        'research_results' : result['research_results']
+        "messages": result["messages"],
+        "research_results": result["research_results"],
     }
 
 
@@ -55,7 +57,7 @@ def run_email(state: MainState, runtime):
 
     email_input = {
         "recipient": recipient,
-        "subject": state.get("email_subject", ""),
+        "subject": "",
         "purpose": state["objective"],
         "draft": None,
         "approved": None,
@@ -91,7 +93,7 @@ def build_graph():
         'supervisor',
         route_supervisor,
         {
-            'research' : 'resarch',
+            'research' : 'research',
             'planning' : 'planning',
             'email' : 'email',
             'final' : END
@@ -101,4 +103,5 @@ def build_graph():
     builder.add_edge('planning','supervisor')
     builder.add_edge('email','supervisor')
 
-    return builder.compile()
+
+    return builder

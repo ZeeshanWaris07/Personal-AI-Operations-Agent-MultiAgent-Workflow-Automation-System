@@ -17,8 +17,6 @@ def build_email_graph():
 
     builder = StateGraph(EmailState)
 
-    checkpointer = SqliteSaver.from_conn_string('email_checkpoints.db')
-
     builder.add_node('email_drafting',generate_email_draft)
     builder.add_node('approval',human_approval)
     builder.add_node('send_email',send_email)
@@ -35,7 +33,5 @@ def build_email_graph():
     )
     builder.add_edge('send_email',END)
     
-    return builder.compile(
-        checkpointer=checkpointer
-    )
+    return builder.compile()
 

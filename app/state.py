@@ -46,6 +46,8 @@ class EmailState(TypedDict):
 
 class MainState(TypedDict):
 
+    messages : Annotated[list,add_messages]
+
     objective: str
 
     next_agent: str | None

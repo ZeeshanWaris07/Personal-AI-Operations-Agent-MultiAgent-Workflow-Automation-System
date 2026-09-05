@@ -15,7 +15,6 @@ class PlanReview(BaseModel):
     feedback: str
     missing_items: list[str]
 
-    from pydantic import BaseModel
 
 
 class EmailDraft(BaseModel):

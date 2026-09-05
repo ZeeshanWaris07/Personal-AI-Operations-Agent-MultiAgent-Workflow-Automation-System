@@ -5,7 +5,7 @@ from app.state import EmailState
 def generate_email_draft(state:EmailState):
 
     recipient = state["recipient"]
-    subject = state["subject"]
+
     purpose = state["purpose"]
 
     email_agent = llm.with_structured_output(EmailDraft)
@@ -17,9 +17,6 @@ Create a professional email based on the information below.
 
 RECIPIENT:
 {recipient}
-
-SUBJECT:
-{subject}
 
 PURPOSE:
 {purpose}

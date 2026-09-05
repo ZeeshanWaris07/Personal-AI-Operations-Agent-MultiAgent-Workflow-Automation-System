@@ -4,6 +4,7 @@ from app.state import MainState
 from typing import Literal
 from pydantic import BaseModel,Field
 import asyncio 
+from app.llm import llm
 
 class SupervisorDecision(BaseModel):
     next_agent : Literal[
@@ -27,9 +28,7 @@ class SupervisorDecision(BaseModel):
         description="Email addresses explicitly provided by the user"
     )
 
-llm = ChatGoogleGenerativeAI(
-    model = 'gemini-3.6-flash'
-)
+
 
 decision_llm = llm.with_structured_output(SupervisorDecision)
 
