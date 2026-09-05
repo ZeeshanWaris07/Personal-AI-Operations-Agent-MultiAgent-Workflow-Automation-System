@@ -1,3 +1,14 @@
+from tavily import AsyncTavilyClient
+from langchain_core.tools import tool
+
+from app.config import TAVILY_API_KEY
+
+
+client = AsyncTavilyClient(
+    api_key=TAVILY_API_KEY
+)
+
+
 @tool
 async def fetch_webpage(url: str) -> str:
     """
@@ -11,7 +22,6 @@ async def fetch_webpage(url: str) -> str:
     """
 
     try:
-
         response = await client.extract(
             urls=[url]
         )
@@ -24,5 +34,6 @@ async def fetch_webpage(url: str) -> str:
         return results[0].get("raw_content", "")
 
     except Exception as e:
-
-        return f"Webpage extraction failed: {str(e)}"
+        raise RuntimeError(
+            f"Webpage extraction failed: {str(e)}"
+        ) from e
