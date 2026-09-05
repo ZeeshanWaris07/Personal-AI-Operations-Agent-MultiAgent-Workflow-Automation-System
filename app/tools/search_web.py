@@ -14,11 +14,16 @@ async def search_web(query: str) -> str:
     """
     Search the web for current information.
 
+    Use this tool when you need to discover relevant
+    webpages, articles, companies, documentation, or
+    other publicly available information.
+
     Args:
-        query: Search query.
+        query: A clear and specific web search query.
 
     Returns:
-        Relevant search results.
+        A formatted list of search results containing
+        the title, URL, and relevant content snippet.
     """
 
     try:
@@ -28,8 +33,32 @@ async def search_web(query: str) -> str:
             max_results=5,
         )
 
-        return str(response)
+        results = response.get("results", [])
+
+        if not results:
+            return "No relevant search results were found."
+
+        formatted_results = []
+
+        for index, result in enumerate(results, start=1):
+
+            title = result.get("title", "No title")
+            url = result.get("url", "No URL")
+            content = result.get("content", "No content")
+
+            formatted_results.append(
+                f"""
+Result {index}:
+Title: {title}
+URL: {url}
+Content: {content}
+"""
+            )
+
+        return "\n".join(formatted_results)
 
     except Exception as e:
 
-        return f"Web search failed: {str(e)}"
+        raise RuntimeError(
+            f"Web search failed: {str(e)}"
+        ) from e
