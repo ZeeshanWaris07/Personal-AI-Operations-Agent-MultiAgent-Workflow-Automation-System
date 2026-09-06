@@ -11,7 +11,7 @@ class AgentState(TypedDict):
 
     allowed_tool_calls : list[dict]
 
-    tool_result: ToolExecutionResult | None
+    tool_result: list[ToolExecutionResult] | None
 
 
 class PlanningState(TypedDict):
@@ -24,7 +24,7 @@ class PlanningState(TypedDict):
 
     review: PlanReview | None
 
-    num_iterations : int = 0
+    num_iterations : int
 
 
 class EmailState(TypedDict):

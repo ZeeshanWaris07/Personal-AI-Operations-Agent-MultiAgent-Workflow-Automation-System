@@ -14,21 +14,23 @@ def tool_controller(
     state: AgentState,
     runtime: Runtime[AgentContext],
 ):
-    
-    last_message = state["messages"][-1]
 
-    tool_calls = getattr(
-        last_message,
-        "tool_calls",
-        [],
-    )
+
+    messages = state.get("messages", [])
+    if not messages:
+        print("No messages found in state")
+        return {"allowed_tool_calls": []}
+
+    last_message = messages[-1]
+    
+    if isinstance(last_message, dict):
+        tool_calls = last_message.get("tool_calls", [])
+    else:
+        tool_calls = getattr(last_message, "tool_calls", [])
 
     if not tool_calls:
-
         print("No tool calls")
-        return {
-            "allowed_tool_calls": []
-        }
+        return {"allowed_tool_calls": []}
 
     print("Tool Calls")
 

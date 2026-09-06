@@ -1,14 +1,11 @@
-def create_tool_signature(
-    tool_name: str,
-    arguments: dict,
-) -> str:
+import json
 
-    args = ",".join(
-        f"{key}={value}"
-        for key, value in sorted(arguments.items())
-    )
-
-    return f"{tool_name}:{args}"
+def create_tool_signature(tool_name: str, arguments: dict) -> str:
+    try:
+        serialized_args = json.dumps(arguments, sort_keys=True)
+    except TypeError:
+        serialized_args = str(arguments)
+    return f"{tool_name}:{serialized_args}"
 
 
 def find_previous_call(
