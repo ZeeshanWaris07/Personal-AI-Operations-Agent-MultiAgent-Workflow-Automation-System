@@ -62,7 +62,7 @@ Keep good parts of the existing plan while
 fixing the identified problems.
 """
 
-    planner_llm = llm.with_structured_output(Plan)
+    planner_llm = llm.with_structured_output(Plan,method='json_mode')
 
     plan = planner_llm.invoke(prompt)
 

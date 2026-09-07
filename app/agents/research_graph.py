@@ -48,32 +48,22 @@ def route_filter(state:AgentState):
 
 def route_tool_result(
     state: AgentState,
-    runtime: Runtime[AgentContext],
+    runtime: AgentContext,
 ):
     results = state.get("tool_result")
 
-    if not results:
-        return "end"
+    if results:
 
+        has_non_retryable = any(
+            getattr(r, "status", None) == "failed" and not getattr(r, "retryable", False)
+            for r in results
+        )
+        if has_non_retryable or runtime.context.retry_count >= runtime.context.max_retries:
+            print("[Route Tool Result] Non-retryable failure or max retries hit. Ending sub-graph.")
+            return "end"
 
-    all_successful = all(getattr(r, "status", None) == "success" for r in results)
-    if all_successful:
-        return "research"
-
-
-    has_non_retryable = any(
-        getattr(r, "status", None) == "failed" and not getattr(r, "retryable", False)
-        for r in results
-    )
-    if has_non_retryable:
-        return "end"
-
-
-    if runtime.context.retry_count >= runtime.context.max_retries:
-        return "end"
 
     return "research"
-
 
 def build_research_graph():
     builder = StateGraph(AgentState)
@@ -110,13 +100,6 @@ def build_research_graph():
         'tools',
         'tool_result_handler'
     )
-    builder.add_conditional_edges(
-        'tool_result_handler',
-        route_tool_result,
-        {
-            'research' : 'research',
-            'end' : END
-        }
-    )
+    builder.add_edge('tool_result_handler','research')
 
     return builder.compile()

@@ -15,24 +15,36 @@ planning_graph = build_planner_graph()
 email_graph = build_email_graph()
 
 async def run_research(state: MainState, runtime):
+    prompt_content = f"OBJECTIVE: {state['objective']}"
+    
+    # Pass previous findings if this is a follow-up research attempt
+    if state.get("research_results"):
+        prompt_content += f"""
+
+PREVIOUS RESEARCH FINDINGS:
+{state['research_results']}
+
+INSTRUCTIONS FOR RESEARCH AGENT:
+The previous research did not fully satisfy the objective.
+- Do NOT repeat searches you have already performed.
+- Perform targeted follow-up queries for missing details (e.g., search specific company websites or contact pages for HR emails).
+- If information is genuinely not publicly available after trying, state that clearly in your final response so the workflow can proceed.
+"""
 
     result = await research_graph.ainvoke(
         {
             "messages": [
                 {
                     "role": "user",
-                    "content": state["objective"]
+                    "content": prompt_content
                 }
             ]
         },
-        context=runtime.context
+        config={"configurable": {"context": runtime.context}}
     )
 
     research_results = result["messages"][-1].content
-
-    return {
-        "research_results": research_results
-    }
+    return {"research_results": research_results}
 
 
 async def run_planning(state: MainState, runtime):

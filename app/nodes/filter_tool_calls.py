@@ -14,7 +14,6 @@ def create_filter_ai_message(state):
     filtered_message = AIMessage(
         content=getattr(last_message, "content", ""),
         tool_calls=allowed_tool_calls,
-        # Do NOT pass id=last_message.id here!
     )
 
     return {

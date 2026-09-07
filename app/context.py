@@ -8,7 +8,7 @@ class AgentContext:
 
     num_iterations: int = 0
 
-    max_iterations: int = 10
+    max_iterations: int = 15
 
     retry_count: int = 0
 
