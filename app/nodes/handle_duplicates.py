@@ -1,5 +1,5 @@
 from langchain_core.messages import ToolMessage
-
+from app.state import AgentState
 def handle_duplicate_tools_node(state: AgentState):
     """
     If all tool calls were filtered out, create dummy ToolMessage responses

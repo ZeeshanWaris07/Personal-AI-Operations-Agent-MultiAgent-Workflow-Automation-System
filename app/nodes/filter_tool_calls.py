@@ -12,9 +12,9 @@ def create_filter_ai_message(state):
     print(allowed_tool_calls)
 
     filtered_message = AIMessage(
-        id = last_message.id,
-        content = last_message.content,
-        tool_calls = allowed_tool_calls 
+        content=getattr(last_message, "content", ""),
+        tool_calls=allowed_tool_calls,
+        # Do NOT pass id=last_message.id here!
     )
 
     return {

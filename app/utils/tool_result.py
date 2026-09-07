@@ -1,21 +1,12 @@
-from typing import Literal
-
+from typing import Any, Optional
 from pydantic import BaseModel
 
 
 class ToolExecutionResult(BaseModel):
-
     tool: str
-
-    status: Literal[
-        "success",
-        "failed",
-    ]
-
-    result: str | None = None
-
-    error_type: str | None = None
-
-    message: str | None = None
-
+    tool_call_id: Optional[str] = None  
+    status: str
+    result: Any = None
+    error_type: Optional[str] = None
+    message: Optional[str] = None
     retryable: bool = False
