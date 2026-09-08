@@ -56,7 +56,7 @@ context = AgentContext(
 
 async def main():
 
-    thread_id = str(uuid.uuid4())
+    thread_id = 'test_1'
 
     config = {
         "configurable": {

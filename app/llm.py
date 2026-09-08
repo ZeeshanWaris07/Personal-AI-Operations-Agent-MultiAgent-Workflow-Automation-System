@@ -11,6 +11,10 @@ load_dotenv()
 #     max_retries=3                 # Automatically pauses and retries if a 429 hits
 # )
 
-llm = ChatOllama(
-    model = 'qwen3:8b'
+llm = ChatGoogleGenerativeAI(
+    model = 'gemini-3.6-flash'
 )
+
+# llm = ChatOllama(
+#     model = 'qwen3:8b'
+# )

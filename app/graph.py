@@ -69,15 +69,12 @@ async def run_planning(state: MainState, runtime):
 
 async def run_email(state: MainState, runtime):
 
-    recipient = state["recipients"][0]
-
     email_input = {
-        "recipient": recipient,
-        "subject": "",
+        "recipients": state["recipients"],
         "purpose": state["objective"],
-        "draft": None,
+        "drafts": [],
         "approved": None,
-        "send_result": None,
+        "send_result": []
     }
 
     result = await email_graph.ainvoke(
@@ -86,9 +83,9 @@ async def run_email(state: MainState, runtime):
     )
 
     return {
-        "email_draft": result.get("draft"),
+        "email_drafts": result.get("drafts"),
         "email_approved": result.get("approved"),
-        "email_send_result": result.get("send_result"),
+        "email_send_result": result.get("send_result")
     }
 
 def route_supervisor(state: MainState):

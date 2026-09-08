@@ -1,35 +1,58 @@
 from app.llm import llm
-from app.models.models import EmailDraft
+from app.nodes.mail_tools import send_mail, get_mail
 from app.state import EmailState
 
-def generate_email_draft(state:EmailState):
+tools = [
+    send_mail,
+    get_mail,
+]
 
-    recipient = state["recipient"]
+email_agent = llm.bind_tools(tools)
 
-    purpose = state["purpose"]
 
-    email_agent = llm.with_structured_output(EmailDraft)
+def email_agent_node(state: EmailState):
 
-    prompt = f"""
-You are an email drafting agent.
+    messages = state.get("messages", [])
 
-Create a professional email based on the information below.
+    if not messages:
+        messages = [
+            {
+                "role": "user",
+                "content": f"""
+You are an email operations agent.
+
+USER OBJECTIVE:
+{state["purpose"]}
 
 RECIPIENT:
-{recipient}
+{state.get("recipient", "Not specified")}
 
-PURPOSE:
-{purpose}
+You can perform email operations using the available tools.
 
-Requirements:
-- Keep the email professional and concise.
-- Clearly communicate the purpose.
-- Do not invent facts.
-- Return only the structured email draft.
+Available operations:
+
+1. get_mail
+   Use this when you need to inspect existing emails or obtain
+   information from the user's mailbox.
+
+2. send_mail
+   Use this when an email needs to be sent.
+   Sending an email requires human approval.
+
+Decide what action is required to accomplish the user's objective.
+
+If you need information from an existing email, use get_mail first.
+
+If an email needs to be sent, create the appropriate email content
+and call send_mail.
+
+Do not invent information.
 """
+            }
+        ]
 
-    draft = email_agent.invoke(prompt)
+    response = email_agent.invoke(messages)
 
     return {
-        "draft": draft
+        "messages": [response]
     }

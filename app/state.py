@@ -28,11 +28,13 @@ class PlanningState(TypedDict):
 
 
 class EmailState(TypedDict):
-    recipient: str
+    messages : Annotated[list,add_messages]
+
+    recipient: list[str]
     subject: str
     purpose: str
 
-    draft: EmailDraft | None
+    drafts: list[EmailDraft] | None
 
     approved: bool | None
 

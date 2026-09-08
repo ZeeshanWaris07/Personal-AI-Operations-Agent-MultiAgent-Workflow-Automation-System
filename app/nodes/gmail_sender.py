@@ -7,28 +7,36 @@ from app.state import EmailState
 
 def send_email(state: EmailState):
 
-    draft = state["draft"]
+    drafts = state["drafts"]
 
     service = get_gmail_service()
 
-    message = MIMEText(draft.body)
+    results = []
 
-    message["to"] = draft.recipient
-    message["subject"] = draft.subject
+    for draft in drafts:
 
-    encoded_message = base64.urlsafe_b64encode(
-        message.as_bytes()
-    ).decode()
+        message = MIMEText(draft.body)
 
-    body = {
-        "raw": encoded_message
-    }
+        message["to"] = draft.recipient
+        message["subject"] = draft.subject
 
-    result = service.users().messages().send(
-        userId="me",
-        body=body
-    ).execute()
+        encoded_message = base64.urlsafe_b64encode(
+            message.as_bytes()
+        ).decode()
+
+        body = {
+            "raw": encoded_message
+        }
+
+        result = service.users().messages().send(
+            userId="me",
+            body=body
+        ).execute()
+
+        results.append(
+            f"Email sent to {draft.recipient}. Message ID: {result['id']}"
+        )
 
     return {
-        "send_result": f"Email sent successfully. Message ID: {result['id']}"
+        "send_result": results
     }
