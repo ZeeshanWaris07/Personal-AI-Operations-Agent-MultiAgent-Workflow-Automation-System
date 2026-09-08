@@ -31,7 +31,6 @@ class EmailState(TypedDict):
     messages : Annotated[list,add_messages]
 
     recipient: list[str]
-    subject: str
     purpose: str
 
     drafts: list[EmailDraft] | None

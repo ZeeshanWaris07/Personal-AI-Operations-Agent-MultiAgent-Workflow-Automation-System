@@ -21,30 +21,17 @@ def email_agent_node(state: EmailState):
                 "content": f"""
 You are an email operations agent.
 
-USER OBJECTIVE:
+OBJECTIVE:
 {state["purpose"]}
 
-RECIPIENT:
-{state.get("recipient", "Not specified")}
+RECIPIENTS:
+{state.get("recipients", [])}
 
-You can perform email operations using the available tools.
+Use get_mail when you need to read existing emails.
+Use send_mail when an email needs to be sent.
 
-Available operations:
-
-1. get_mail
-   Use this when you need to inspect existing emails or obtain
-   information from the user's mailbox.
-
-2. send_mail
-   Use this when an email needs to be sent.
-   Sending an email requires human approval.
-
-Decide what action is required to accomplish the user's objective.
-
-If you need information from an existing email, use get_mail first.
-
-If an email needs to be sent, create the appropriate email content
-and call send_mail.
+You may make multiple tool calls in the same turn when needed,
+including one send_mail call for each recipient.
 
 Do not invent information.
 """
