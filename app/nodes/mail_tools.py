@@ -53,3 +53,58 @@ def send_mail(
         "subject": subject,
         "body": body
     }
+
+
+@tool
+def search_mail(query: str):
+    """
+    Search the user's Gmail mailbox using a Gmail search query.
+    Returns matching email message IDs and basic metadata.
+    """
+
+    service = get_gmail_service()
+
+    result = service.users().messages().list(
+        userId="me",
+        q=query,
+        maxResults=10
+    ).execute()
+
+    messages = result.get("messages", [])
+
+    if not messages:
+        return {
+            "query": query,
+            "results": []
+        }
+
+    results = []
+
+    for message in messages:
+        message_id = message["id"]
+
+        email = service.users().messages().get(
+            userId="me",
+            id=message_id,
+            format="metadata",
+            metadataHeaders=["From", "To", "Subject", "Date"]
+        ).execute()
+
+        headers = {
+            header["name"]: header["value"]
+            for header in email.get("payload", {}).get("headers", [])
+        }
+
+        results.append({
+            "id": message_id,
+            "thread_id": message.get("threadId"),
+            "from": headers.get("From"),
+            "to": headers.get("To"),
+            "subject": headers.get("Subject"),
+            "date": headers.get("Date")
+        })
+
+    return {
+        "query": query,
+        "results": results
+    }
