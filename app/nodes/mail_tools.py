@@ -1,5 +1,6 @@
 from langchain_core.tools import tool
 from app.services.gmail_auth import get_gmail_service
+import json
 
 @tool
 def get_mail(query: str = "", limit: int = 10):
