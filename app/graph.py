@@ -67,6 +67,9 @@ async def run_planning(state: MainState, runtime):
     }
 
 
+from langchain_core.messages import AIMessage
+
+
 async def run_email(state: MainState, runtime):
 
     email_input = {
@@ -74,7 +77,8 @@ async def run_email(state: MainState, runtime):
         "purpose": state["objective"],
         "drafts": [],
         "approved": None,
-        "send_result": []
+        "send_result": None,
+        "messages": []
     }
 
     result = await email_graph.ainvoke(
@@ -82,10 +86,15 @@ async def run_email(state: MainState, runtime):
         context=runtime.context
     )
 
+    messages = result.get("messages", [])
+
+    email_result = messages[-1] if messages else None
+
     return {
         "email_drafts": result.get("drafts"),
         "email_approved": result.get("approved"),
-        "email_send_result": result.get("send_result")
+        "email_send_result": result.get("send_result"),
+        "messages": [email_result] if email_result else []
     }
 
 def route_supervisor(state: MainState):
