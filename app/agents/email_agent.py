@@ -1,10 +1,11 @@
 from app.llm import llm
-from app.nodes.mail_tools import send_mail, get_mail
+from app.nodes.mail_tools import send_mail, get_mail,search_mail
 from app.state import EmailState
 
 tools = [
     send_mail,
     get_mail,
+    search_mail
 ]
 
 email_agent = llm.bind_tools(tools)

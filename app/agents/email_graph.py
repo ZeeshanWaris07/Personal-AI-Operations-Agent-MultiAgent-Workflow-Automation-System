@@ -5,12 +5,13 @@ from app.state import EmailState
 from app.agents.email_agent import email_agent_node
 from app.nodes.human_approval import human_approval
 from app.nodes.gmail_sender import send_email
-from app.nodes.mail_tools import send_mail, get_mail
+from app.nodes.mail_tools import send_mail, get_mail,search_mail
 
 
 mail_tools = [
     send_mail,
-    get_mail
+    get_mail,
+    search_mail
 ]
 
 
