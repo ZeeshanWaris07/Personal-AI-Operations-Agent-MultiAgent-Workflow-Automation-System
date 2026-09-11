@@ -32,6 +32,9 @@ EMAIL APPROVED:
 EMAIL SEND RESULT:
 {state.get("email_send_result")}
 
+CONVERSATION:
+{state.get('messages')}
+
 Summarize:
 1. What was accomplished.
 2. Important research findings.
