@@ -7,6 +7,9 @@ from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from app.context import AgentContext
 from app.graph import build_graph
 
+from app.ingestion import ingestion
+
+vector_store = None
 
 def handle_event(event):
 
@@ -159,6 +162,8 @@ context = AgentContext(
 
 async def main():
 
+    vector_store = ingestion()
+    
     thread_id = "test_3"
 
     config = {
