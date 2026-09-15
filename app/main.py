@@ -3,13 +3,15 @@ import asyncio
 from langchain_core.messages import HumanMessage
 from langgraph.types import Command
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-
+from sentence_transformers import CrossEncoder
 from app.context import AgentContext
 from app.graph import build_graph
 
 from app.ingestion import ingestion
 
+bm25_retriever = None
 vector_store = None
+reranker = None
 
 def handle_event(event):
 
@@ -162,7 +164,9 @@ context = AgentContext(
 
 async def main():
 
-    vector_store = ingestion()
+    vector_store,bm25_retriever = ingestion()
+
+    reranker = CrossEncoder("BAAI/bge-reranker-base")
     
     thread_id = "test_3"
 

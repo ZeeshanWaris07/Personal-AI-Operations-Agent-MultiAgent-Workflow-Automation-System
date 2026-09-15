@@ -2,7 +2,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-
+from langchain_classic.retrievers import BM25Retriever
 import os
 
 def load_documents(folder_name):
@@ -30,6 +30,8 @@ def ingestion():
 
     chunks = splitter.split_documents(doc_pages)
 
+    bm25_retriever = BM25Retriever.from_documents(chunks)
+
     embeddings = HuggingFaceEmbeddings(
         model_name = 'BAAI/bge-small-en-v1.5'
     )
@@ -49,4 +51,4 @@ def ingestion():
             embedding_function=embeddings
         )
 
-    return vector_db
+    return vector_db,bm25_retriever
