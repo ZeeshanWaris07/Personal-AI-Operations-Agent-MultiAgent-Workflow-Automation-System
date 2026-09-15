@@ -1,12 +1,11 @@
+
 from langchain_core.messages import SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.runtime import Runtime
+
 from app.state import AgentState
 from app.tools import TOOLS
 from app.llm import llm
-
-
-research_llm = llm.bind_tools(TOOLS)
+from app.tools.retriever import create_rag_tools
 
 
 RESEARCH_PROMPT = """
@@ -14,7 +13,7 @@ You are an autonomous Research Agent.
 
 Your goal is to gather complete and accurate information for the user's request.
 
-You have access to web research tools.
+You have access to web research tools and the user's private knowledge base.
 
 IMPORTANT TOOL EXECUTION RULE:
 
@@ -38,16 +37,25 @@ These independent calls can then be executed concurrently.
 Only perform sequential tool calls when the next search depends on
 the result of a previous search.
 
+PRIVATE KNOWLEDGE BASE:
+
+Use retrieve_documents when the user's request requires information
+from their private documents, resume, projects, notes, or other
+stored personal information.
+
+Do not use retrieve_documents for general public information.
+
 RESEARCH PROCESS:
 
 1. Understand the user's request.
-2. Perform an initial discovery search if necessary.
-3. Identify the information or entities that need further research.
-4. Group independent research tasks together and issue their tool
+2. Determine whether private knowledge or external information is needed.
+3. Perform an initial discovery search if necessary.
+4. Identify the information or entities that need further research.
+5. Group independent research tasks together and issue their tool
    calls in the same response.
-5. After receiving the tool results, determine whether additional
+6. After receiving the tool results, determine whether additional
    research is necessary.
-6. When sufficient information has been gathered, stop calling tools
+7. When sufficient information has been gathered, stop calling tools
    and produce the final answer.
 
 Do not invent information.
@@ -60,24 +68,37 @@ without tool calls.
 """
 
 
-def research_agent(state: AgentState,runtime:Runtime):
-    
-    runtime.context.num_iterations += 1
+def create_research_agent(rag_pipeline):
 
-    print(
-        f"Iteration: {runtime.context.num_iterations}"
-    )
+    rag_tools = create_rag_tools(rag_pipeline)
 
-    messages = [
-        SystemMessage(content=RESEARCH_PROMPT),
-        *state["messages"],
+    research_tools = [
+        *TOOLS,
+        *rag_tools
     ]
 
-    response = research_llm.invoke(messages)
+    research_llm = llm.bind_tools(research_tools)
 
-    print('-'*60)
-    print(response)
+    def research_agent(state: AgentState, runtime: Runtime):
 
-    return {
-        "messages": [response]
-    }
+        runtime.context.num_iterations += 1
+
+        print(
+            f"Iteration: {runtime.context.num_iterations}"
+        )
+
+        messages = [
+            SystemMessage(content=RESEARCH_PROMPT),
+            *state["messages"],
+        ]
+
+        response = research_llm.invoke(messages)
+
+        print("-" * 60)
+        print(response)
+
+        return {
+            "messages": [response]
+        }
+
+    return research_agent

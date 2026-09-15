@@ -10,16 +10,16 @@ from app.agents.planning_graph import build_planner_graph
 from langgraph.checkpoint.sqlite import SqliteSaver
 from app.nodes.final_response import final_response
 
-research_graph = build_research_graph()
 planning_graph = build_planner_graph()
 email_graph = build_email_graph()
 
-async def run_research(state: MainState, runtime):
-    prompt_content = f"OBJECTIVE: {state['objective']}"
-    
-    # Pass previous findings if this is a follow-up research attempt
-    if state.get("research_results"):
-        prompt_content += f"""
+def make_run_research(research_graph):
+
+    async def run_research(state: MainState, runtime):
+        prompt_content = f"OBJECTIVE: {state['objective']}"
+
+        if state.get("research_results"):
+            prompt_content += f"""
 
 PREVIOUS RESEARCH FINDINGS:
 {state['research_results']}
@@ -31,20 +31,25 @@ The previous research did not fully satisfy the objective.
 - If information is genuinely not publicly available after trying, state that clearly in your final response so the workflow can proceed.
 """
 
-    result = await research_graph.ainvoke(
-        {
-            "messages": [
-                {
-                    "role": "user",
-                    "content": prompt_content
-                }
-            ]
-        },
-        config={"configurable": {"context": runtime.context}}
-    )
+        result = await research_graph.ainvoke(
+            {
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt_content
+                    }
+                ]
+            },
+            config={"configurable": {"context": runtime.context}}
+        )
 
-    research_results = result["messages"][-1].content
-    return {"research_results": research_results}
+        research_results = result["messages"][-1].content
+
+        return {
+            "research_results": research_results
+        }
+
+    return run_research
 
 
 async def run_planning(state: MainState, runtime):
@@ -100,30 +105,39 @@ async def run_email(state: MainState, runtime):
 def route_supervisor(state: MainState):
     return state['next_agent']
 
-def build_graph():
+
+def build_graph(rag_pipeline):
+
     builder = StateGraph(MainState)
 
-    builder.add_node('supervisor',supervisor)
-    builder.add_node('research',run_research)
-    builder.add_node('planning',run_planning)
-    builder.add_node('email',run_email)
-    builder.add_node('final',final_response)
+    research_graph = build_research_graph(rag_pipeline)
+    planning_graph = build_planner_graph()
+    email_graph = build_email_graph()
 
-    builder.add_edge(START,'supervisor')
+    run_research = make_run_research(research_graph)
+
+    builder.add_node('supervisor', supervisor)
+    builder.add_node('research', run_research)
+    builder.add_node('planning', run_planning)
+    builder.add_node('email', run_email)
+    builder.add_node('final', final_response)
+
+    builder.add_edge(START, 'supervisor')
 
     builder.add_conditional_edges(
         'supervisor',
         route_supervisor,
         {
-            'research' : 'research',
-            'planning' : 'planning',
-            'email' : 'email',
-            'final' : 'final'
+            'research': 'research',
+            'planning': 'planning',
+            'email': 'email',
+            'final': 'final'
         }
     )
-    builder.add_edge('research','supervisor')
-    builder.add_edge('planning','supervisor')
-    builder.add_edge('email','supervisor')
-    builder.add_edge('final',END)
+
+    builder.add_edge('research', 'supervisor')
+    builder.add_edge('planning', 'supervisor')
+    builder.add_edge('email', 'supervisor')
+    builder.add_edge('final', END)
 
     return builder

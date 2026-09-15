@@ -7,11 +7,8 @@ from sentence_transformers import CrossEncoder
 from app.context import AgentContext
 from app.graph import build_graph
 
-from app.ingestion import ingestion
-
-bm25_retriever = None
-vector_store = None
-reranker = None
+from app.rag.ingestion import ingestion
+from app.rag.pipeline import RAGPipeline
 
 def handle_event(event):
 
@@ -165,8 +162,7 @@ context = AgentContext(
 async def main():
 
     vector_store,bm25_retriever = ingestion()
-
-    reranker = CrossEncoder("BAAI/bge-reranker-base")
+    rag_pipeline = RAGPipeline(vector_store,bm25_retriever)
     
     thread_id = "test_3"
 
@@ -176,7 +172,7 @@ async def main():
         }
     }
 
-    builder = build_graph()
+    builder = build_graph(rag_pipeline)
 
     async with AsyncSqliteSaver.from_conn_string(
         "checkpoints.db"
