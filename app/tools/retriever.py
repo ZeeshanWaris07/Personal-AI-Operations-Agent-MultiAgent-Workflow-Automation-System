@@ -1,4 +1,3 @@
-
 from langchain_core.tools import tool
 
 
@@ -16,6 +15,10 @@ def create_rag_tools(rag_pipeline):
 
         Do not use this tool for general web or external information.
         """
+
+        print("=" * 80)
+        print("RETRIEVE_DOCUMENTS TOOL CALLED")
+        print("QUERY:", query)
 
         result = rag_pipeline.retrieve(query)
 
