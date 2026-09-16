@@ -3,6 +3,7 @@ from typing import Annotated,TypedDict,Literal
 from app.utils.tool_result import ToolExecutionResult
 from app.models.models import Plan,PlanReview,EmailDraft
 from app.models.models import FinalResponse
+from app.gaurdrails.schemas import GaurdrailDecision
 
 class AgentState(TypedDict):
     messages : Annotated[list,add_messages]
@@ -67,3 +68,5 @@ class MainState(TypedDict):
     email_send_result: str | None
 
     final_response: dict
+
+    gaurdrail_decision : GaurdrailDecision | None = None
