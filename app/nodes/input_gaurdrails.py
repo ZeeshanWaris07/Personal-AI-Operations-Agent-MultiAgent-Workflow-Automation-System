@@ -1,6 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 from app.gaurdrails.schemas import GaurdrailDecision
 from app.llm import gaurdrail_llm
+from langchain_core.messages import HumanMessage
 
 GUARDRAIL_PROMPT = """
 You are an input safety classifier for a Personal AI Operations Agent.
@@ -42,7 +43,7 @@ gaurdrail_prompt = ChatPromptTemplate.from_messages(
 
 gaurdrail_llm_with_SO = gaurdrail_llm.with_structured_output(GaurdrailDecision)
 
-gaurdrail_chain = gaurdrail_prompt | gaurdrail_llm
+gaurdrail_chain = gaurdrail_prompt | gaurdrail_llm_with_SO
 
 MAX_INPUT_LENGTH = 1000
 
@@ -65,7 +66,14 @@ def validate_input(user_input: str):
 
 async def input_gaurdrail(state):
 
-    user_input = state['messages'][-1]
+    user_input = next(
+        (
+            message.content
+            for message in reversed(state["messages"])
+            if isinstance(message, HumanMessage)
+        ),
+        "",
+    )
 
     validation_result = validate_input(user_input)
 
@@ -77,6 +85,9 @@ async def input_gaurdrail(state):
     decision = await gaurdrail_chain.ainvoke({
         'user_input' : user_input
     })
+
+    print("GUARDRAIL RESULT:", decision)
+    print("GUARDRAIL TYPE:", type(decision))
 
     return {
         'gaurdrail_decision' : decision

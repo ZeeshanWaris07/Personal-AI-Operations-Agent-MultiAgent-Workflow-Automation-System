@@ -8,6 +8,8 @@ from app.agents.email_graph import build_email_graph
 from app.agents.planning_graph import build_planner_graph
 from langgraph.checkpoint.sqlite import SqliteSaver
 from app.nodes.final_response import final_response
+from app.nodes.input_gaurdrails import input_gaurdrail
+from langchain_core.messages import AIMessage
 
 planning_graph = build_planner_graph()
 email_graph = build_email_graph()
@@ -104,24 +106,56 @@ async def run_email(state: MainState, runtime):
 def route_supervisor(state: MainState):
     return state['next_agent']
 
+def route_after_guardrail(state:MainState):
+    decision = state["gaurdrail_decision"]
+
+    if decision.allowed:
+        return "supervisor"
+
+    return "blocked"
+
+def gaurdrail_response(state):
+
+    decision = state["gaurdrail_decision"]
+
+    response = (
+        "I can't process this request because it was blocked by "
+        f"the input guardrail: {decision.reason}"
+    )
+
+    return {
+        "messages": [AIMessage(content=response)],
+        "final_response": response,
+    }
 
 def build_graph(rag_pipeline):
 
     builder = StateGraph(MainState)
 
     research_graph = build_research_graph(rag_pipeline)
-    planning_graph = build_planner_graph()
-    email_graph = build_email_graph()
 
     run_research = make_run_research(research_graph)
 
+    builder.add_node('input_gaurdrails',input_gaurdrail)
     builder.add_node('supervisor', supervisor)
     builder.add_node('research', run_research)
     builder.add_node('planning', run_planning)
     builder.add_node('email', run_email)
     builder.add_node('final', final_response)
+    builder.add_node('blocked',gaurdrail_response)
 
-    builder.add_edge(START, 'supervisor')
+    builder.add_edge(START, 'input_gaurdrails')
+
+    builder.add_conditional_edges(
+        'input_gaurdrails',
+        route_after_guardrail,
+        {
+            'supervisor':'supervisor',
+            'blocked':'blocked'
+        }
+    )
+
+    builder.add_edge('blocked',END)
 
     builder.add_conditional_edges(
         'supervisor',

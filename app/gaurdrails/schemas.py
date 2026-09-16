@@ -8,5 +8,5 @@ class GaurdrailDecision(BaseModel):
         'prompt_injection',
         'unsafe',
         'out_of_scope'
-    ],
+    ]
     reason:str
