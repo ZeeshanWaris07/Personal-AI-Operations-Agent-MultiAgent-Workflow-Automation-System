@@ -68,9 +68,7 @@ without tool calls.
 """
 
 
-def create_research_agent(rag_pipeline):
-
-    rag_tools = create_rag_tools(rag_pipeline)
+def create_research_agent(rag_tools):
 
     research_tools = [
         *TOOLS,

@@ -1,12 +1,13 @@
 from langgraph.graph import StateGraph, START, END
 from app.state import AgentState
 from app.context import AgentContext
-from app.nodes.tool_executor import tool_node
+from app.nodes.tool_executor import create_tool_node
 from app.agents.research_agent import create_research_agent
 from app.nodes.tool_controller import tool_controller
 from app.nodes.filter_tool_calls import create_filter_ai_message
 from app.nodes.tool_result_processor import handle_tool_result
 from app.nodes.handle_duplicates import handle_duplicate_tools_node
+from app.tools.retriever import create_rag_tools
 from langgraph.runtime import Runtime
 
 def route_research(state: AgentState, runtime: Runtime):
@@ -74,7 +75,11 @@ def route_tool_result(
 
 def build_research_graph(rag_pipeline):
 
-    research_agent = create_research_agent(rag_pipeline)
+    rag_tool = create_rag_tools(rag_pipeline)
+
+    research_agent = create_research_agent(rag_tool)
+
+    tool_node = create_tool_node(rag_tool)
 
     builder = StateGraph(AgentState)
 

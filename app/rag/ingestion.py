@@ -24,8 +24,8 @@ def ingestion():
     print(doc_pages[0].page_content)
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size = 400,
-        chunk_overlap = 40
+        chunk_size = 1000,
+        chunk_overlap = 150
     )
 
     chunks = splitter.split_documents(doc_pages)
