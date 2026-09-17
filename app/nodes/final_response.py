@@ -1,3 +1,4 @@
+
 from langchain_core.messages import AIMessage
 from app.state import MainState
 from app.models.models import FinalResponse
@@ -33,7 +34,7 @@ EMAIL SEND RESULT:
 {state.get("email_send_result")}
 
 CONVERSATION:
-{state.get('messages')}
+{state.get("messages")}
 
 Summarize:
 1. What was accomplished.
@@ -50,10 +51,10 @@ Return the result using the required structured format.
     response = await structured_llm.ainvoke(prompt)
 
     return {
-        "final_response": response.model_dump_json(),
+        "final_response": response.message,
         "messages": [
             AIMessage(
-                content=response.model_dump_json()
+                content=response.message
             )
         ]
     }

@@ -12,7 +12,7 @@ load_dotenv()
 # )
 
 llm = ChatGoogleGenerativeAI(
-    model = 'gemini-3.6-flash'
+    model = 'gemini-3.5-flash-lite'
 )
 
 # llm = ChatOllama(

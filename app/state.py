@@ -42,6 +42,8 @@ class EmailState(TypedDict):
 
 class MainState(TypedDict):
 
+    chat_history : list
+
     messages : Annotated[list,add_messages]
 
     objective: str

@@ -232,10 +232,9 @@ defined by the SupervisorDecision schema.
 
 """
 
-
 async def supervisor(state: MainState):
 
-    messages = [    
+    messages = [
         SystemMessage(content=SUPERVISOR_PROMPT),
 
         HumanMessage(
@@ -263,8 +262,8 @@ EMAIL SEND RESULT:
 PREVIOUS EMAIL RECIPIENTS:
 {state.get("recipients")}
 
-CONVERSATION / AGENT HISTORY:
-{state.get("messages", [])}
+RECENT CONVERSATION:
+{state.get("chat_history", [])[-6:]}
 """
         )
     ]

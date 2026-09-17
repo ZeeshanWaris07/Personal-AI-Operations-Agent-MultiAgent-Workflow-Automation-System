@@ -10,6 +10,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from app.nodes.final_response import final_response
 from app.nodes.input_gaurdrails import input_gaurdrail
 from langchain_core.messages import AIMessage
+from app.nodes.save_chat_history import save_chat_history
 
 planning_graph = build_planner_graph()
 email_graph = build_email_graph()
@@ -163,7 +164,7 @@ def build_graph(rag_pipeline):
     builder.add_node('blocked',gaurdrail_response)
     builder.add_node('output_guardrail',output_guardrail)
     builder.add_node("output_guardrail_blocked",output_guardrail_blocked)
-
+    builder.add_node('save_chat_history',save_chat_history)
 
     builder.add_edge(START, 'input_gaurdrails')
 
@@ -197,10 +198,11 @@ def build_graph(rag_pipeline):
         'output_guardrail',
         route_after_output_guardrail,
         {
-            'passed':END,
+            'passed':'save_chat_history',
             'blocked':'output_guardrail_blocked'
         }
     )
     builder.add_edge('output_guardrail_blocked',END)
+    builder.add_edge('save_chat_history',END)
 
     return builder
