@@ -8,3 +8,4 @@ token.json
 checkpoints.db
 user_docs
 vector_db
+.vs
