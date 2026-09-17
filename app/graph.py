@@ -128,6 +128,24 @@ def gaurdrail_response(state):
         "final_response": response,
     }
 
+def route_after_output_guardrail(state: MainState):
+
+    if state["output_guardrail_passed"]:
+        return "passed"
+
+    return "blocked"
+
+def output_guardrail_blocked(state: MainState):
+
+    response = (
+        "I couldn't safely return the generated response."
+    )
+
+    return {
+        "messages": [AIMessage(content=response)],
+        "final_response": response,
+    }
+
 def build_graph(rag_pipeline):
 
     builder = StateGraph(MainState)
@@ -144,6 +162,8 @@ def build_graph(rag_pipeline):
     builder.add_node('final', final_response)
     builder.add_node('blocked',gaurdrail_response)
     builder.add_node('output_guardrail',output_guardrail)
+    builder.add_node("output_guardrail_blocked",output_guardrail_blocked)
+
 
     builder.add_edge(START, 'input_gaurdrails')
 
@@ -173,5 +193,14 @@ def build_graph(rag_pipeline):
     builder.add_edge('planning', 'supervisor')
     builder.add_edge('email', 'supervisor')
     builder.add_edge('final', 'output_guardrail')
-    builder.add_edge('output_guardrail',END)
+    builder.add_conditional_edges(
+        'output_guardrail',
+        route_after_output_guardrail,
+        {
+            'passed':END,
+            'blocked':'output_guardrail_blocked'
+        }
+    )
+    builder.add_edge('output_guardrail_blocked',END)
+
     return builder
