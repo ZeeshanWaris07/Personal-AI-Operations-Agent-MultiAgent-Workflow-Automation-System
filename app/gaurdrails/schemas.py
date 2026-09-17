@@ -10,3 +10,14 @@ class GaurdrailDecision(BaseModel):
         'out_of_scope'
     ]
     reason:str
+
+
+class OutputGaurdrailDecision(BaseModel):
+    allowed: bool
+    category: Literal[
+        "safe",
+        "unsafe",
+        "data_leak",
+        "unsupported_claim"
+    ]
+    reason: str

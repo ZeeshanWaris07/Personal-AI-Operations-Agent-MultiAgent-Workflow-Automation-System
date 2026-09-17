@@ -70,3 +70,6 @@ class MainState(TypedDict):
     final_response: dict
 
     gaurdrail_decision : GaurdrailDecision | None = None
+
+    output_guardrail_passed: bool | None
+    output_guardrail_reason: str | None

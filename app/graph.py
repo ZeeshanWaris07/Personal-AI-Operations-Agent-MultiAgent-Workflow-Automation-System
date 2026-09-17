@@ -2,7 +2,7 @@ from langgraph.graph import StateGraph,START,END
 from app.state import AgentState,MainState
 from app.nodes.supervisor import supervisor
 
-
+from app.nodes.output_gaurdrails import output_guardrail
 from app.agents.research_graph import build_research_graph
 from app.agents.email_graph import build_email_graph
 from app.agents.planning_graph import build_planner_graph
@@ -143,6 +143,7 @@ def build_graph(rag_pipeline):
     builder.add_node('email', run_email)
     builder.add_node('final', final_response)
     builder.add_node('blocked',gaurdrail_response)
+    builder.add_node('output_guardrail',output_guardrail)
 
     builder.add_edge(START, 'input_gaurdrails')
 
@@ -171,6 +172,6 @@ def build_graph(rag_pipeline):
     builder.add_edge('research', 'supervisor')
     builder.add_edge('planning', 'supervisor')
     builder.add_edge('email', 'supervisor')
-    builder.add_edge('final', END)
-
+    builder.add_edge('final', 'output_guardrail')
+    builder.add_edge('output_guardrail',END)
     return builder
