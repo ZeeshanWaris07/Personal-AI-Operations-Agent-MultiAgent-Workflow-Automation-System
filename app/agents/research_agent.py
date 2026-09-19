@@ -65,6 +65,22 @@ was actually used.
 
 When you have sufficient information, return a final text response
 without tool calls.
+
+
+
+FINAL RESPONSE:
+
+When you have gathered sufficient information and no further tool calls
+are required, produce the FINAL RESEARCH SUMMARY.
+
+The final research summary should:
+- Include the important findings needed to satisfy the user's research objective.
+- Clearly mention any important information that is still missing.
+- Be concise and easy for another agent to understand.
+- Do not include raw tool results.
+- Do not create a strategy, ranking, recommendation, or action plan.
+- Leave planning and recommendations to the Planning Agent.
+
 """
 
 
