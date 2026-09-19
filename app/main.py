@@ -242,12 +242,29 @@ async def main():
 
             final_state = snapshot.values
 
-            if final_state.get("messages"):
+            response = final_state.get("final_response")
 
-                print(
-                    "\n\nAI:",
-                    final_state["messages"][-1].content
-                )
+            if response:
+                print("\n" + "=" * 60)
+                print("FINAL RESPONSE")
+                print("=" * 60)
+            
+                print("\nSUMMARY:")
+                print(response.summary)
+            
+                print("\nRESEARCH SUMMARY:")
+                print(response.research_summary or "No research was performed.")
+            
+                print("\nPLAN SUMMARY:")
+                print(response.plan_summary or "No plan was created.")
+            
+                print("\nEMAIL STATUS:")
+                print(response.email_status or "No email workflow was requested.")
+            
+                print("\nMESSAGE:")
+                print(response.message)
+            
+                print("=" * 60)
 
 
 if __name__ == "__main__":

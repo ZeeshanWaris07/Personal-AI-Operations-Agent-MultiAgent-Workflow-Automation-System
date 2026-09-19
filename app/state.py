@@ -69,7 +69,7 @@ class MainState(TypedDict):
     email_approved: bool | None
     email_send_result: str | None
 
-    final_response: FinalResponse
+    final_response: FinalResponse | None
 
     gaurdrail_decision : GaurdrailDecision | None = None
 
