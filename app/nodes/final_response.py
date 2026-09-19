@@ -51,7 +51,7 @@ Return the result using the required structured format.
     response = await structured_llm.ainvoke(prompt)
 
     return {
-        "final_response": response.message,
+        "final_response": response,
         "messages": [
             AIMessage(
                 content=response.message

@@ -6,7 +6,7 @@ from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from sentence_transformers import CrossEncoder
 from app.context import AgentContext
 from app.graph import build_graph
-
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from app.rag.ingestion import ingestion
 from app.rag.pipeline import RAGPipeline
 
@@ -174,8 +174,19 @@ async def main():
 
     builder = build_graph(rag_pipeline)
 
+    serde = JsonPlusSerializer(
+    allowed_msgpack_modules=[
+        ("app.models.models", "Plan"),
+        ("app.models.models", "PlanReview"),
+        ("app.models.models", "EmailDraft"),
+        ("app.models.models", "FinalResponse"),
+        ("app.gaurdrails.schemas", "GaurdrailDecision"),
+    ]
+    )
+    
     async with AsyncSqliteSaver.from_conn_string(
-        "checkpoints.db"
+        "checkpoints.db",
+        serde=serde
     ) as checkpointer:
 
         graph = builder.compile(
