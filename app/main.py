@@ -174,21 +174,21 @@ async def main():
 
     builder = build_graph(rag_pipeline)
 
-    serde = JsonPlusSerializer(
-    allowed_msgpack_modules=[
-        ("app.models.models", "Plan"),
-        ("app.models.models", "PlanReview"),
-        ("app.models.models", "EmailDraft"),
-        ("app.models.models", "FinalResponse"),
-        ("app.gaurdrails.schemas", "GaurdrailDecision"),
-    ]
-    )
     
     async with AsyncSqliteSaver.from_conn_string(
         "checkpoints.db",
-        serde=serde
     ) as checkpointer:
 
+        checkpointer = checkpointer.with_allowlist(
+        [
+            ("app.models.models", "Plan"),
+            ("app.models.models", "PlanReview"),
+            ("app.models.models", "EmailDraft"),
+            ("app.models.models", "FinalResponse"),
+            ("app.gaurdrails.schemas", "GaurdrailDecision"),
+        ]
+    )
+        
         graph = builder.compile(
             checkpointer=checkpointer
         )
